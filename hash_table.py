@@ -58,17 +58,13 @@ class HashTable:
         self.total += 1
 
     def remove(self, key: str, hf: Callable[["HashTable", str], int]) -> bool:
-        ''' 
-        Task 3
-        Here you should implement a remove method that will find a particular 
-        key/value pair stored in the hash table and remove it. It should consider
-        the edge cases described in the readme file. This function should return 
-        True if the element is found and deleted, and False if not found
-        '''
         index = hf(self, key)
         curr_node = self.buckets[index]
         if curr_node is None:
             return False
+        elif curr_node.key == key:
+            self.buckets[index] = curr_node.next
+            return True
         prev_node: Node = curr_node
         while True:
             if curr_node.key == key:
