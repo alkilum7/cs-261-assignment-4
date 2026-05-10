@@ -17,14 +17,14 @@ def hash_function1(table: "HashTable", key: str) -> int:
     return ord(key[0]) % table.size
 
 def hash_function2(table: "HashTable", key: str) -> int:
-    '''
-    Task 2
-    You are to create an updated hash function that does a better job of 
-    removing collisions. Full points for getting the number of collisions
-    down to 3, and partial points for 4. Currently it's the same as 
-    hash_function1 and needs to be update.d
-    '''
-    return ord(key[0]) % table.size
+    hash_value = 0
+    modulus = table.size
+    for i in range(len(key)):
+        hash_value += ord(key[i]) * i
+        hash_value = hash_value % modulus + hash_value // modulus
+    hash_value = hash_value % modulus
+    return hash_value
+
 
 # ------------------------------------------------------------
 # Hash Table Class
@@ -65,7 +65,21 @@ class HashTable:
         the edge cases described in the readme file. This function should return 
         True if the element is found and deleted, and False if not found
         '''
-        return False
+        index = hf(self, key)
+        curr_node = self.buckets[index]
+        if curr_node is None:
+            return False
+        prev_node: Node = curr_node
+        while True:
+            if curr_node.key == key:
+                prev_node.next = curr_node.next
+                return True
+            elif curr_node.next is None:
+                return False
+            else:
+                # Proceed to the next node
+                prev_node = curr_node
+                curr_node = curr_node.next
 
     def get(self, key: str, hf: Callable[["HashTable", str], int]) -> Optional[int]:
         index = hf(self, key)
@@ -112,13 +126,13 @@ class HashTable:
         self.total = 0
 
     def collisions(self) -> int:
-        '''
-        Task 1
-        You are to update this collisions function to actually compute the 
-        number of collisions in the hash table. 
-        '''
-
         num = 0
+        for bucket in self.buckets:
+            if bucket is not None:
+                curr_bucket: Node = bucket
+                while curr_bucket.next is not None:
+                    num += 1
+                    curr_bucket = curr_bucket.next
         return num
 
     def display(self) -> None:
