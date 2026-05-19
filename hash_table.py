@@ -67,6 +67,7 @@ class HashTable:
             return False
         elif curr_node.key == key:
             self.buckets[index] = curr_node.next
+            self.total -= 1
             return True
         
         # Start iterating
@@ -74,6 +75,7 @@ class HashTable:
         while True:
             if curr_node.key == key:
                 prev_node.next = curr_node.next
+                self.total -= 1
                 return True
             elif curr_node.next is None:
                 return False
