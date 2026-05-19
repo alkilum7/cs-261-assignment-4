@@ -17,10 +17,11 @@ def hash_function1(table: "HashTable", key: str) -> int:
     return ord(key[0]) % table.size
 
 def hash_function2(table: "HashTable", key: str) -> int:
+    salt = 1
     hash_value = 0
     modulus = table.size
     for i in range(len(key)):
-        hash_value += ord(key[i]) * i
+        hash_value += ord(key[i]) * i * salt
         hash_value = hash_value % modulus + hash_value // modulus
     hash_value = hash_value % modulus
     return hash_value
@@ -60,11 +61,15 @@ class HashTable:
     def remove(self, key: str, hf: Callable[["HashTable", str], int]) -> bool:
         index = hf(self, key)
         curr_node = self.buckets[index]
+
+        # Check certain edge cases
         if curr_node is None:
             return False
         elif curr_node.key == key:
             self.buckets[index] = curr_node.next
             return True
+        
+        # Start iterating
         prev_node: Node = curr_node
         while True:
             if curr_node.key == key:
